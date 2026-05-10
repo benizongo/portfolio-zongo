@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZONGO Benewende — Marketeur E-Business & Stratège Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --ink: #0e0e0e;
+    --cream: #f6f1e9;
+    --gold: #b8972e;
+    --muted: #6e6456;
+    --card: #faf7f2;
+    --border: rgba(10,10,10,0.1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--ink); font-family: 'Instrument Serif', Georgia, serif; overflow-x: hidden; cursor: none; }
+
+  .cursor { position: fixed; width: 10px; height: 10px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .3s, height .3s; mix-blend-mode: multiply; }
+  .cursor-ring { position: fixed; width: 36px; height: 36px; border: 1px solid var(--gold); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); opacity: .5; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 18px 60px; background: rgba(246,241,233,.93); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); z-index: 100; }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; }
+  .nav-links a:hover { color: var(--gold); }
+
+  header { min-height: 100vh; padding: 140px 60px 80px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 60px; align-items: center; }
+  .hero-eyebrow { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 14px; }
+  .hero-eyebrow::before { content: ''; width: 36px; height: 1px; background: var(--gold); }
+  .hero-name { font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px, 7.5vw, 112px); line-height: .92; letter-spacing: -1px; opacity: 0; animation: fadeUp .9s ease .1s forwards; }
+  .hero-name .accent { color: var(--gold); }
+  .hero-title { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); margin-top: 22px; border-left: 2px solid var(--gold); padding-left: 14px; opacity: 0; animation: fadeUp .9s ease .3s forwards; }
+  .hero-desc { font-style: italic; font-size: 16px; line-height: 1.7; color: #4a4038; margin-top: 28px; max-width: 500px; opacity: 0; animation: fadeUp .9s ease .5s forwards; }
+  .hero-cta { margin-top: 36px; display: flex; gap: 12px; opacity: 0; animation: fadeUp .9s ease .7s forwards; }
+  .btn-primary { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; padding: 13px 26px; background: var(--ink); color: var(--cream); text-decoration: none; border: 1px solid var(--ink); transition: all .3s; cursor: none; }
+  .btn-primary:hover { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+  .btn-outline { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; padding: 13px 26px; background: transparent; color: var(--ink); text-decoration: none; border: 1px solid var(--ink); transition: all .3s; cursor: none; }
+  .btn-outline:hover { background: var(--ink); color: var(--cream); }
+
+  .hero-right { display: flex; flex-direction: column; align-items: center; gap: 20px; opacity: 0; animation: fadeUp .9s ease .6s forwards; }
+
+  .photo-frame { width: 260px; height: 320px; border: 2px dashed rgba(184,151,46,.5); position: relative; overflow: hidden; background: linear-gradient(135deg, #f0ebe0, #e8e0d0); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; transition: border-color .3s; cursor: pointer; }
+  .photo-frame:hover { border-color: var(--gold); }
+  .photo-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+  .photo-frame img.loaded { display: block; }
+  .photo-icon { font-size: 36px; opacity: .35; }
+  .photo-text { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); text-align: center; line-height: 1.7; }
+  .photo-frame input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .photo-label { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+
+  .qr-zone { background: var(--ink); border: 1px solid rgba(184,151,46,.25); padding: 18px 20px; display: flex; align-items: center; gap: 16px; width: 260px; }
+  #qrcode canvas, #qrcode img { display: block; border-radius: 4px; }
+  .qr-info { flex: 1; }
+  .qr-label { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 5px; }
+  .qr-text { font-size: 12px; color: rgba(246,241,233,.6); line-height: 1.4; font-style: italic; }
+  .qr-url { font-family: 'Space Mono', monospace; font-size: 7.5px; color: rgba(184,151,46,.7); margin-top: 5px; word-break: break-all; line-height: 1.4; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  .marquee-wrap { background: var(--ink); padding: 13px 0; overflow: hidden; white-space: nowrap; }
+  .marquee-track { display: inline-flex; animation: marquee 25s linear infinite; }
+  .marquee-track span { font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 3px; color: rgba(246,241,233,.45); padding: 0 28px; }
+  .marquee-track .dot { color: var(--gold); }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  section { padding: 100px 60px; }
+  .section-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; max-width: 50px; height: 1px; background: var(--gold); }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(42px, 5vw, 76px); line-height: .95; letter-spacing: -1px; margin-bottom: 52px; }
+
+  #profil { background: var(--ink); color: var(--cream); }
+  #profil .section-title { color: var(--cream); }
+  .profil-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+  .profil-quote { font-style: italic; font-size: clamp(16px, 1.8vw, 21px); line-height: 1.75; color: rgba(246,241,233,.8); border-left: 2px solid var(--gold); padding-left: 26px; }
+  .profil-details { display: flex; flex-direction: column; gap: 16px; }
+  .detail-item { padding: 18px 22px; border: 1px solid rgba(255,255,255,.07); display: flex; gap: 16px; transition: border-color .3s; }
+  .detail-item:hover { border-color: rgba(184,151,46,.4); }
+  .detail-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); min-width: 90px; margin-top: 2px; }
+  .detail-value { font-size: 14px; color: rgba(246,241,233,.82); line-height: 1.5; }
+
+  #competences { background: var(--card); }
+  .skills-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
+  .skill-block { background: var(--cream); border: 1px solid var(--border); padding: 32px 28px; position: relative; overflow: hidden; transition: transform .3s, box-shadow .3s; }
+  .skill-block::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: var(--gold); transition: width .4s; }
+  .skill-block:hover { transform: translateY(-4px); box-shadow: 0 14px 40px rgba(0,0,0,.08); }
+  .skill-block:hover::after { width: 100%; }
+  .skill-cat { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .skill-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; margin-bottom: 14px; }
+  .skill-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .skill-list li { font-size: 14px; color: var(--muted); padding-left: 16px; position: relative; }
+  .skill-list li::before { content: '—'; position: absolute; left: 0; color: var(--gold); }
+
+  #experiences { background: var(--cream); }
+  .timeline { position: relative; }
+  .timeline::before { content: ''; position: absolute; left: 150px; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--gold), rgba(184,151,46,.05)); }
+  .exp-item { display: grid; grid-template-columns: 150px 1fr; gap: 0 44px; padding-bottom: 52px; opacity: 0; transform: translateY(16px); transition: opacity .6s, transform .6s; }
+  .exp-item.visible { opacity: 1; transform: translateY(0); }
+  .exp-meta { text-align: right; padding-top: 4px; }
+  .exp-period { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); line-height: 1.6; }
+  .exp-loc { font-style: italic; font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .exp-body { position: relative; padding-left: 30px; }
+  .exp-body::before { content: ''; position: absolute; left: -5px; top: 8px; width: 10px; height: 10px; background: var(--gold); border-radius: 50%; border: 2px solid var(--cream); box-shadow: 0 0 0 3px rgba(184,151,46,.22); }
+  .exp-role { font-family: 'Bebas Neue', sans-serif; font-size: 28px; line-height: 1; margin-bottom: 4px; }
+  .exp-company { font-style: italic; font-size: 14px; color: var(--muted); margin-bottom: 14px; }
+  .exp-tasks { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .exp-tasks li { font-size: 14px; color: #3e342a; line-height: 1.55; padding-left: 18px; position: relative; }
+  .exp-tasks li::before { content: '→'; position: absolute; left: 0; color: var(--gold); }
+
+  #formation { background: var(--ink); color: var(--cream); }
+  #formation .section-title { color: var(--cream); }
+  .edu-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 2px; margin-bottom: 56px; }
+  .edu-card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); padding: 36px 32px; transition: background .3s, border-color .3s; }
+  .edu-card:hover { background: rgba(184,151,46,.06); border-color: rgba(184,151,46,.25); }
+  .edu-year { font-family: 'Bebas Neue', sans-serif; font-size: 52px; color: rgba(184,151,46,.28); line-height: 1; margin-bottom: 12px; }
+  .edu-degree { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--cream); margin-bottom: 6px; line-height: 1.2; }
+  .edu-school { font-style: italic; font-size: 13px; color: rgba(246,241,233,.42); }
+  .cert-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .cert-label::after { content: ''; flex: 1; max-width: 50px; height: 1px; background: var(--gold); }
+  .certs-list { display: flex; flex-direction: column; gap: 10px; }
+  .cert-row { display: flex; align-items: center; gap: 18px; padding: 16px 22px; border: 1px solid rgba(184,151,46,.12); transition: border-color .3s, background .3s; }
+  .cert-row:hover { border-color: rgba(184,151,46,.45); background: rgba(184,151,46,.04); }
+  .cert-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+  .cert-name { font-size: 14px; color: rgba(246,241,233,.78); flex: 1; }
+  .cert-provider { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(184,151,46,.65); }
+
+  #reference { background: var(--card); }
+  .ref-card { max-width: 480px; border: 1px solid var(--border); padding: 44px; background: var(--cream); position: relative; overflow: hidden; }
+  .ref-card::before { content: '"'; position: absolute; top: -20px; right: 28px; font-family: 'Bebas Neue', sans-serif; font-size: 140px; color: rgba(184,151,46,.07); line-height: 1; }
+  .ref-name { font-family: 'Bebas Neue', sans-serif; font-size: 26px; margin-bottom: 5px; }
+  .ref-role { font-style: italic; font-size: 14px; color: var(--muted); margin-bottom: 18px; }
+  .ref-email { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px; color: var(--gold); text-decoration: none; }
+
+  footer { background: var(--ink); color: var(--cream); padding: 72px 60px; border-top: 1px solid rgba(184,151,46,.18); }
+  .footer-inner { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 40px; margin-bottom: 40px; }
+  .footer-cta { font-family: 'Bebas Neue', sans-serif; font-size: clamp(34px, 4vw, 60px); line-height: 1; }
+  .footer-cta span { color: var(--gold); }
+  .footer-contacts { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+  .footer-contact-item { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: rgba(246,241,233,.45); text-decoration: none; transition: color .2s; }
+  .footer-contact-item:hover { color: var(--gold); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,.05); padding-top: 28px; display: flex; justify-content: space-between; }
+  .footer-copy { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; color: rgba(246,241,233,.18); }
+  .footer-nat { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(184,151,46,.45); }
+
+  @media (max-width: 860px) {
+    nav { padding: 14px 20px; } .nav-links { display: none; }
+    header { grid-template-columns: 1fr; padding: 110px 24px 60px; }
+    section { padding: 72px 24px; }
+    .profil-grid, .skills-grid, .edu-grid, .footer-inner { grid-template-columns: 1fr; }
+    .timeline::before { left: 0; }
+    .exp-item { grid-template-columns: 1fr; gap: 10px; } .exp-meta { text-align: left; }
+    .footer-contacts { align-items: flex-start; } footer { padding: 56px 24px; }
+    .hero-right { align-items: flex-start; } .photo-frame, .qr-zone { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <div class="nav-logo">Zongo B.A.P.</div>
+  <div class="nav-links">
+    <a href="#profil">Profil</a>
+    <a href="#competences">Compétences</a>
+    <a href="#experiences">Expériences</a>
+    <a href="#formation">Formation</a>
+    <a href="#reference">Contact</a>
+  </div>
+</nav>
+
+<header>
+  <div class="hero-left">
+    <div class="hero-eyebrow">Portfolio Professionnel</div>
+    <h1 class="hero-name">ZONGO<br><span class="accent">Benewende</span><br>Albert Pierrick</h1>
+    <p class="hero-title">Marketeur E-Business &amp; Stratège Digital</p>
+    <p class="hero-desc">Spécialisé en stratégie e-business, création de contenu et community management. Actuellement en Master 1 à HEC Rabat.</p>
+    <div class="hero-cta">
+      <a href="mailto:benewende.zongo@hec.ac.ma" class="btn-primary">Me contacter</a>
+      <a href="#experiences" class="btn-outline">Mon parcours</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="photo-frame" id="photoFrame" title="Cliquez pour ajouter votre photo">
+      <img id="photoPreview" alt="Photo de profil">
+      <span class="photo-icon">👤</span>
+      <span class="photo-text">Cliquez pour<br>insérer votre photo</span>
+      <input type="file" accept="image/*" id="photoInput">
+    </div>
+    <p class="photo-label">← Votre photo ici</p>
+
+    <div class="qr-zone">
+      <div id="qrcode"></div>
+      <div class="qr-info">
+        <div class="qr-label">Scanner pour visiter</div>
+        <div class="qr-text">Portfolio en ligne</div>
+        <div class="qr-url">benizongo.github.io/portfolio-zongo/</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>Community Management</span><span class="dot">◆</span><span>Stratégie E-Business</span><span class="dot">◆</span><span>Création de Contenu</span><span class="dot">◆</span><span>Data Analytics</span><span class="dot">◆</span><span>Prompt Engineering IA</span><span class="dot">◆</span><span>Montage Vidéo</span><span class="dot">◆</span><span>Influence Marketing</span><span class="dot">◆</span><span>Communication Digitale</span><span class="dot">◆</span><span>Community Management</span><span class="dot">◆</span><span>Stratégie E-Business</span><span class="dot">◆</span><span>Création de Contenu</span><span class="dot">◆</span><span>Data Analytics</span><span class="dot">◆</span><span>Prompt Engineering IA</span><span class="dot">◆</span><span>Montage Vidéo</span><span class="dot">◆</span><span>Influence Marketing</span><span class="dot">◆</span><span>Communication Digitale</span><span class="dot">◆</span>
+  </div>
+</div>
+
+<section id="profil">
+  <div class="section-label">01 — Profil Professionnel</div>
+  <h2 class="section-title">Qui suis-je ?</h2>
+  <div class="profil-grid">
+    <p class="profil-quote">"Marketeur Digital spécialisé en stratégie e-business, je combine une solide base en économie-gestion acquise en licence avec une expertise technique confirmée en création de contenu et community management. Fort d'expériences en milieu médiatique (3TV) et en agence (WeLoveBuzz), je maîtrise l'élaboration de plans de communication digitaux et l'analyse de données de terrain. Actuellement en Master 1 pour approfondir mes leviers stratégiques, je suis un profil rigoureux, créatif et orienté résultats."</p>
+    <div class="profil-details">
+      <div class="detail-item"><div class="detail-label">Formation</div><div class="detail-value">Master 1 Marketing E-Business — HEC Business School, Rabat</div></div>
+      <div class="detail-item"><div class="detail-label">Localisation</div><div class="detail-value">Rabat, Maroc</div></div>
+      <div class="detail-item"><div class="detail-label">Nationalité</div><div class="detail-value">Burkinabè</div></div>
+      <div class="detail-item"><div class="detail-label">Posture</div><div class="detail-value">Rigoureux, créatif, orienté résultats</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="competences">
+  <div class="section-label">02 — Compétences & Expertises</div>
+  <h2 class="section-title">Mes Savoir-faire</h2>
+  <div class="skills-grid">
+    <div class="skill-block"><div class="skill-cat">Communication</div><div class="skill-title">Communication Digitale</div><ul class="skill-list"><li>Élaboration de plans de communication</li><li>Community Management</li><li>Stratégie E-business</li></ul></div>
+    <div class="skill-block"><div class="skill-cat">Création</div><div class="skill-title">Création de Contenu</div><ul class="skill-list"><li>Conception d'affiches publicitaires</li><li>Montage vidéo</li><li>Storytelling</li></ul></div>
+    <div class="skill-block"><div class="skill-cat">Outils & Data</div><div class="skill-title">Outils & Analyse</div><ul class="skill-list"><li>Microsoft Office (Word, Excel)</li><li>SPSS</li><li>XAMPP</li><li>Data Analytics</li></ul></div>
+    <div class="skill-block"><div class="skill-cat">Innovation</div><div class="skill-title">IA Générative</div><ul class="skill-list"><li>Ingénierie des invites (Prompt Engineering)</li><li>Outils d'IA générative</li></ul></div>
+    <div class="skill-block" style="grid-column:1/-1;"><div class="skill-cat">Soft Skills</div><div class="skill-title">Qualités Personnelles</div><ul class="skill-list" style="flex-direction:row;flex-wrap:wrap;gap:10px 36px;"><li>Adaptabilité</li><li>Gestion du temps</li><li>Esprit d'équipe</li><li>Bienveillance</li></ul></div>
+  </div>
+</section>
+
+<section id="experiences">
+  <div class="section-label">03 — Expériences Professionnelles</div>
+  <h2 class="section-title">Mon Parcours</h2>
+  <div class="timeline">
+    <div class="exp-item"><div class="exp-meta"><div class="exp-period">Juillet 2025<br>→ Présent</div><div class="exp-loc">Maroc</div></div><div class="exp-body"><div class="exp-role">Consultant en Communication Digitale</div><div class="exp-company">FANAB Pro Consulting SARL</div><ul class="exp-tasks"><li>Conseil en communication digitale — mission en cours.</li></ul></div></div>
+    <div class="exp-item"><div class="exp-meta"><div class="exp-period">Mai 2025<br>→ Juin 2025</div><div class="exp-loc">Casablanca, Maroc</div></div><div class="exp-body"><div class="exp-role">Chargé de Mission Terrain</div><div class="exp-company">WeLoveBuzz</div><ul class="exp-tasks"><li>Collecte et analyse de données sur les besoins et préférences des cibles.</li><li>Rédaction de rapports détaillés et recommandations stratégiques.</li></ul></div></div>
+    <div class="exp-item"><div class="exp-meta"><div class="exp-period">2022 → 2023</div><div class="exp-loc">Rabat, Maroc</div></div><div class="exp-body"><div class="exp-role">Secrétaire Général</div><div class="exp-company">Junior Entreprise HEC</div><ul class="exp-tasks"><li>Veille concurrentielle pour une parapharmacie basée à Rabat.</li><li>Gestion administrative et suivi des dossiers de la structure.</li></ul></div></div>
+    <div class="exp-item"><div class="exp-meta"><div class="exp-period">2022 → 2024</div><div class="exp-loc">Ouagadougou, Burkina Faso</div></div><div class="exp-body"><div class="exp-role">Ambassadeur</div><div class="exp-company">Dydy Event</div><ul class="exp-tasks"><li>Création et gestion de partenariats avec des influenceurs.</li><li>Mise en œuvre de stratégies d'influence marketing.</li></ul></div></div>
+    <div class="exp-item"><div class="exp-meta"><div class="exp-period">2022 (1 mois)</div><div class="exp-loc">Burkina Faso</div></div><div class="exp-body"><div class="exp-role">Stagiaire de Découverte</div><div class="exp-company">SONABEL</div><ul class="exp-tasks"><li>Immersion dans les sections monétique, caisse, comptabilité et recouvrement.</li></ul></div></div>
+    <div class="exp-item"><div class="exp-meta"><div class="exp-period">Ouagadougou</div><div class="exp-loc">Burkina Faso</div></div><div class="exp-body"><div class="exp-role">Community Manager & Création Visuelle</div><div class="exp-company">3TV — Média</div><ul class="exp-tasks"><li>Conception d'affiches publicitaires et supports de communication visuelle.</li><li>Montages vidéo dynamiques pour les plateformes sociales du média.</li><li>Gestion de communauté et animation des réseaux sociaux.</li></ul></div></div>
+  </div>
+</section>
+
+<section id="formation">
+  <div class="section-label">04 — Formation & Diplômes</div>
+  <h2 class="section-title">Études</h2>
+  <div class="edu-grid">
+    <div class="edu-card"><div class="edu-year">2025</div><div class="edu-degree">Master 1 — Marketing E-Business & Stratégie Digitale</div><div class="edu-school">HEC Business School, Rabat — En cours</div></div>
+    <div class="edu-card"><div class="edu-year">2024</div><div class="edu-degree">Licence — Économie et Gestion (Diplômé)</div><div class="edu-school">HEC Business School, Rabat</div></div>
+    <div class="edu-card"><div class="edu-year">2022</div><div class="edu-degree">Baccalauréat — Série A4</div><div class="edu-school">Groupe Scolaire St Viateur, Ouagadougou</div></div>
+    <div class="edu-card"><div class="edu-year">2019</div><div class="edu-degree">Formation — Prise de Parole en Public</div><div class="edu-school">Groupe Scolaire St Viateur — Mai à Juillet 2019</div></div>
+  </div>
+  <div class="cert-label">Certifications — Coursera / IBM</div>
+  <div class="certs-list">
+    <div class="cert-row"><div class="cert-dot"></div><div class="cert-name">Introduction to Project Management</div><div class="cert-provider">Coursera</div></div>
+    <div class="cert-row"><div class="cert-dot"></div><div class="cert-name">Introduction to Data Analytics</div><div class="cert-provider">IBM</div></div>
+    <div class="cert-row"><div class="cert-dot"></div><div class="cert-name">IA Générative : principes de base de l'ingénierie des invites</div><div class="cert-provider">Coursera / IBM</div></div>
+  </div>
+</section>
+
+<section id="reference">
+  <div class="section-label">05 — Référence</div>
+  <h2 class="section-title">Contact Référent</h2>
+  <div class="ref-card">
+    <div class="ref-name">Sihame Laasas</div>
+    <div class="ref-role">Directrice pédagogique — HEC Rabat</div>
+    <a href="mailto:sihame.laasass@hec.ac.ma" class="ref-email">sihame.laasass@hec.ac.ma</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-cta">Travaillons<br><span>Ensemble.</span></div>
+    <div class="footer-contacts">
+      <a href="mailto:benewende.zongo@hec.ac.ma" class="footer-contact-item">benewende.zongo@hec.ac.ma</a>
+      <a href="tel:+2120610698525" class="footer-contact-item">+212 0610698525</a>
+      <span class="footer-contact-item">Rabat, Maroc</span>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 Zongo Benewende Albert Pierrick</div>
+    <div class="footer-nat">Nationalité Burkinabè</div>
+  </div>
+</footer>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+  (function loop(){ rx+=(mx-rx)*.13; ry+=(my-ry)*.13; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(loop); })();
+  document.querySelectorAll('a,button,.skill-block,.edu-card,.cert-row,.detail-item').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ cursor.style.width='18px'; cursor.style.height='18px'; ring.style.opacity='0'; });
+    el.addEventListener('mouseleave',()=>{ cursor.style.width='10px'; cursor.style.height='10px'; ring.style.opacity='.5'; });
+  });
+
+  const obs = new IntersectionObserver(entries=>entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); }),{threshold:.1});
+  document.querySelectorAll('.exp-item').forEach(el=>obs.observe(el));
+
+  document.getElementById('photoInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      const img = document.getElementById('photoPreview');
+      img.src = ev.target.result;
+      img.classList.add('loaded');
+      document.querySelector('.photo-icon').style.display = 'none';
+      document.querySelector('.photo-text').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // QR Code pointant vers ton vrai lien public
+  new QRCode(document.getElementById("qrcode"), {
+    text: "https://benizongo.github.io/portfolio-zongo/",
+    width: 80,
+    height: 80,
+    colorDark: "#f6f1e9",
+    colorLight: "#0e0e0e",
+    correctLevel: QRCode.CorrectLevel.M
+  });
+</script>
+</body>
+</html>
